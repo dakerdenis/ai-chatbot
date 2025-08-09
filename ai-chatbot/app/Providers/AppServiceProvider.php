@@ -11,11 +11,9 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function boot(): void
+    public function register(): void
     {
-        RateLimiter::for('client-chat', function ($request) {
-            return [ Limit::perMinute(30)->by($request->header('X-API-TOKEN') ?? $request->ip()) ];
-        });
+        //
     }
 
     /**
@@ -23,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        RateLimiter::for('client-chat', function ($request) {
+            return [ Limit::perMinute(30)->by($request->header('X-API-TOKEN') ?? $request->ip()) ];
+        });
     }
 }
