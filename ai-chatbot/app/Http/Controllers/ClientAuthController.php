@@ -25,7 +25,8 @@ class ClientAuthController extends Controller
     }
 
     public function dashboard(){
-        $client = \App\Models\Client::find(session('client_id'));
+        $client = \App\Models\Client::with('domains')->find(session('client_id'));
         return view('client.dashboard', compact('client'));
     }
+    
 }
