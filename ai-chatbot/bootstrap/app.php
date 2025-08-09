@@ -4,6 +4,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AuthenticateClient;
+use App\Http\Middleware\ClientSessionAuth;
+use App\Http\Middleware\AdminSessionAuth;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,7 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // алиасы для route middleware
         $middleware->alias([
-            'auth.client' => AuthenticateClient::class,
+            'auth.client' => AuthenticateClient::class,     // для API
+            'client.auth' => ClientSessionAuth::class,      // для web панели клиента
+            'admin.auth'  => AdminSessionAuth::class,       // для web панели админа
         ]);
     })
     
