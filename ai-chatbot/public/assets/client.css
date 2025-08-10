@@ -1,0 +1,313 @@
+/* ========== Base (light, bootstrap-friendly) ========== */
+body {
+  background-color: #f5f6f8;
+  color: #212529;
+}
+.content-wrap { padding-top: 84px; padding-bottom: 40px; }
+.form-control,.form-select,.btn { border-radius: 12px; }
+.card { border-radius: 16px; }
+.shadow-strong { box-shadow: 0 24px 60px rgba(0,0,0,.08); }
+
+/* Navbar when logged in */
+.navbar .navbar-brand i { font-size: 1.2rem; }
+
+/* Primary buttons */
+.btn-primary { background: #0d6efd; border-color: #0d6efd; }
+.btn-primary:hover { background:#0b5ed7; border-color:#0b5ed7; }
+
+/* Danger outline button */
+.btn-outline-danger { color:#dc3545; border-color:#dc3545; }
+.btn-outline-danger:hover { color:#fff; background:#dc3545; border-color:#dc3545; }
+
+/* ========== AUTH PAGE: full-screen, no scroll ========== */
+body.page-auth {
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Stage: centers the card, holds animated background layers */
+.page-auth .content-wrap {
+  padding-top: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  isolation: isolate; /* so children z-index stack above bg layers */
+}
+
+/* ===== Animated background (pure CSS, no JS) ===== */
+
+/* Rotating conic glow */
+.page-auth .content-wrap::before {
+  content:"";
+  position:absolute; inset:-20% -10% -20% -10%;
+  background:
+    conic-gradient(from 180deg,
+      rgba(13,110,253,.10),
+      rgba(111,66,193,.10),
+      rgba(255,193,7,.10),
+      rgba(13,110,253,.10));
+  filter: blur(60px) saturate(130%);
+  animation: spin 26s linear infinite;
+  z-index: -2;
+}
+
+/* Subtle grid overlay */
+.page-auth .content-wrap::after {
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse at 30% -10%, #000 30%, transparent 60%);
+  opacity:.7;
+  z-index: -1;
+}
+
+/* Floating “orbs” */
+.auth-orb {
+  position:absolute; border-radius:50%;
+  filter: blur(12px);
+  opacity:.7;
+  z-index:-1;
+}
+.auth-orb--blue  { width:260px; height:260px; background: radial-gradient(circle at 30% 30%, rgba(13,110,253,.25), transparent 70%); top:8%; left:12%; animation: floatY 11s ease-in-out infinite; }
+.auth-orb--violet{ width:220px; height:220px; background: radial-gradient(circle at 70% 40%, rgba(111,66,193,.22), transparent 70%); bottom:8%; right:10%; animation: floatX 13s ease-in-out infinite; }
+.auth-orb--amber { width:160px; height:160px; background: radial-gradient(circle at 50% 50%, rgba(255,193,7,.18), transparent 70%); top:18%; right:22%; animation: floatXY 17s ease-in-out infinite; }
+
+/* Prefer-reduced-motion: turn off animations */
+@media (prefers-reduced-motion: reduce) {
+  .page-auth .content-wrap::before,
+  .auth-orb { animation: none; }
+}
+
+/* Keyframes */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes floatY { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(18px);} }
+@keyframes floatX { 0%,100%{ transform: translateX(0);} 50%{ transform: translateX(-16px);} }
+@keyframes floatXY{ 0%,100%{ transform: translate(0,0);} 50%{ transform: translate(12px,-12px);} }
+
+/* ===== Auth card styling (AI vibe) ===== */
+.auth-card { width:min(92vw, 560px); margin-inline:auto; position:relative; }
+.auth-card .card {
+  border: 1px solid rgba(13,110,253,.12);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(8px);
+}
+.auth-card .card:hover { border-color: rgba(13,110,253,.22); transition: border-color .2s ease; }
+
+/* Brand row */
+.auth-brand {
+  display:flex; align-items:center; justify-content:center; gap:.75rem;
+}
+.auth-logo {
+  width:48px; height:48px; border-radius:12px;
+  background:
+    conic-gradient(from 140deg, #0d6efd 0 40%, #6f42c1 40% 75%, #ffc107 75% 100%);
+  position: relative;
+  box-shadow: 0 8px 30px rgba(13,110,253,.25);
+}
+.auth-logo::after {
+  content:""; position:absolute; inset:4px; border-radius:10px;
+  background: white;
+  mask-image: radial-gradient(circle at 65% 35%, black 38%, transparent 39%);
+  opacity:.85;
+}
+.auth-title { line-height:1; }
+
+/* Inputs focus glow */
+.form-control:focus {
+  box-shadow: 0 0 0 .25rem rgba(13,110,253,.15);
+  border-color:#0d6efd;
+}
+
+/* Submit button with slight glow */
+.btn-submit {
+  position:relative; overflow:hidden;
+}
+.btn-submit::after{
+  content:""; position:absolute; inset:-2px;
+  background: radial-gradient(120px 60px at var(--x,50%) var(--y,50%), rgba(13,110,253,.18), transparent 60%);
+  pointer-events:none;
+  transition: opacity .2s ease;
+  opacity:0;
+}
+.btn-submit:hover::after{ opacity:1; }
+.btn-submit:active { transform: translateY(1px); }
+
+/* Error hint area keeps height (no jump) */
+.auth-error{ min-height:24px; font-size:.95rem; }
+.auth-error .text-danger{ margin-top:.5rem; }
+
+/* Tiny footer note */
+.auth-foot { color:#6c757d; }
+
+/* Small screens adjustments */
+@media (max-height: 680px) {
+  .auth-card .card-body { padding: 20px; }
+}
+
+
+
+
+
+
+
+
+
+/* ===== Dashboard Styles ===== */
+.dashboard-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.04);
+}
+
+.dashboard-card .card-body {
+  padding: 1.5rem;
+}
+
+.dashboard-badge {
+  font-size: .85rem;
+  letter-spacing: .5px;
+  padding: .4rem .7rem;
+  border-radius: 8px;
+}
+
+/* Greeting */
+.dashboard-greeting {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* Progress bar */
+.progress {
+  background-color: rgba(13,110,253,.1);
+  overflow: hidden;
+}
+.progress-bar {
+  background: linear-gradient(90deg, #0d6efd, #6f42c1);
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+/* Stats mini-cards */
+.stat-card {
+  text-align: center;
+  background: #f8f9fa;
+  border: 1px solid rgba(0,0,0,.05);
+  border-radius: 10px;
+}
+.stat-card .stat-label {
+  font-size: .85rem;
+  color: #6c757d;
+}
+.stat-card .stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Buttons group under stats */
+.dashboard-actions .btn {
+  border-radius: 10px;
+}
+
+/* Domains chips */
+.domain-chip {
+  background: #e9ecef;
+  color: #495057;
+  border-radius: 8px;
+  padding: .35rem .6rem;
+  font-size: .85rem;
+}
+
+/* Token box */
+#tokenBox {
+  cursor: pointer;
+  background: #f8f9fa;
+  border: 1px solid rgba(0,0,0,.08);
+  transition: all .15s ease-in-out;
+}
+#tokenBox:hover {
+  background: #fff;
+  border-color: #0d6efd;
+}
+#tokenValue {
+  font-family: monospace;
+  font-size: .9rem;
+}
+
+/* Code blocks in integration */
+pre code {
+  background: #f8f9fa;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+
+body {
+  background-color: #f5f6f8;
+  color: #212529;
+}
+
+.card {
+  border: 1px solid #cbd3da !important;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+.badge {
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+.progress {
+  background-color: #e6eaf0 !important;
+}
+.progress-bar {
+  background-color: #0d6efd !important;
+}
+
+.metric-box {
+  background: #f9fafb;
+  border: 1px solid #cbd3da;
+  border-radius: 12px;
+  padding: 1rem;
+  height: 100%;
+}
+
+.token-box {
+  padding: .75rem 1rem;
+  border: 1px solid #cbd3da;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.token-box:hover {
+  border-color: #0d6efd;
+  background-color: #eef3ff;
+}
+
+pre {
+  background-color: #f9fafb !important;
+  border: 1px solid #cbd3da !important;
+  border-radius: 8px;
+  padding: .5rem;
+}
+
+
+/* API token reveal */
+.token-box { position: relative; user-select: none; }
+.token-box .token-value {
+  filter: blur(8px);
+  transition: filter .18s ease;
+}
+.token-box:hover .token-value,
+.token-box.reveal .token-value,
+.token-box:focus .token-value {
+  filter: none;
+}
