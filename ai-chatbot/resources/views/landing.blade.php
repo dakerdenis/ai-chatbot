@@ -123,7 +123,6 @@
         </div>
     </div>
 
-
     <script>
         (function() {
             const form = document.querySelector('.chat__form-form');
@@ -131,30 +130,36 @@
             const thread = document.getElementById('chatThread');
             const typing = document.getElementById('typing');
             const sendBtn = form?.querySelector('button');
-            const container = document.querySelector('.main__block-wrapper'); // сюда повесим класс is-chatting
+            const container = document.querySelector('.main__block-wrapper');
 
             if (!form || !input || !thread) return;
+
+            const MAX_LEN = 600;
+            let busy = false;
+            window.chatHistory = window.chatHistory || [];
 
             function scrollToBottom() {
                 thread.scrollTop = thread.scrollHeight;
             }
 
+            function sanitize(s) {
+                s = (s ?? '').replace(/\s+/g, ' ').trim();
+                return s.length > MAX_LEN ? s.slice(0, MAX_LEN) + '…' : s;
+            }
+
             function addMsg(role, text) {
                 const wrap = document.createElement('div');
                 wrap.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
-
                 if (role !== 'user') {
                     const av = document.createElement('div');
                     av.className = 'avatar';
                     av.textContent = 'AI';
                     wrap.appendChild(av);
                 }
-
                 const bubble = document.createElement('div');
                 bubble.className = 'bubble';
                 bubble.textContent = text;
                 wrap.appendChild(bubble);
-
                 thread.appendChild(wrap);
                 scrollToBottom();
             }
@@ -165,40 +170,48 @@
             }
 
             async function handleSend() {
-                const q = (input.value || '').trim();
+                if (busy) return;
+                const qRaw = input.value || '';
+                const q = sanitize(qRaw);
                 if (!q) return;
 
-                // включаем режим чата (карточки скроются по CSS, см. п.2)
                 container?.classList.add('is-chatting');
-
-                // добавляем сообщение пользователя
                 addMsg('user', q);
                 input.value = '';
 
-                // инициализируем историю
-                window.chatHistory = window.chatHistory || [];
-
-                // показываем индикатор
                 toggleTyping(true);
+                busy = true;
+                sendBtn?.setAttribute('disabled', 'disabled');
+
+                const controller = new AbortController();
+                const t = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
                 try {
-                    const body = {
-                        message: q,
-                        history: window.chatHistory.slice(-3)
-                    };
                     const res = await fetch('/api/demo-chat', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json' // <— добавили
                         },
-                        body: JSON.stringify(body)
+                        body: JSON.stringify({
+                            message: q,
+                            history: (window.chatHistory || []).slice(-3)
+                        }),
+                        signal: controller.signal
                     });
-                    const data = await res.json();
 
-                    const answer = res.ok ? (data.answer || '...') : (data.error || 'Error');
+                    let answer = '...';
+                    if (res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        answer = data?.answer || '...';
+                    } else if (res.status === 429) {
+                        answer = 'Rate limit reached. Please slow down and try again.';
+                    } else {
+                        const data = await res.json().catch(() => ({}));
+                        answer = data?.error || 'Server error. Please try later.';
+                    }
                     addMsg('bot', answer);
 
-                    // сохраняем последние 3 Q/A
                     window.chatHistory.push({
                         q,
                         a: answer
@@ -209,12 +222,13 @@
                 } catch (e) {
                     addMsg('bot', 'Network error. Please try again.');
                 } finally {
+                    clearTimeout(t);
                     toggleTyping(false);
+                    busy = false;
+                    sendBtn?.removeAttribute('disabled');
                 }
             }
 
-
-            // обработчики
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 handleSend();
@@ -223,8 +237,6 @@
                 e.preventDefault();
                 handleSend();
             });
-
-            // Enter в поле
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -233,6 +245,7 @@
             });
         })();
     </script>
+
 
 </body>
 
