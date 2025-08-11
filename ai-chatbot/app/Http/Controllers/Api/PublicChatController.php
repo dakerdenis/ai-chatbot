@@ -23,12 +23,12 @@ class PublicChatController extends Controller
 
         // квота диалогов
         if ($client->dialog_used >= $client->dialog_limit) {
-            return response()->json(['error'=>'DIALOG_LIMIT_REACHED'], 429);
+            return response()->json(['error' => 'DIALOG_LIMIT_REACHED'], 429);
         }
 
         // берём промты клиента (не больше лимита)
         $prompts = DB::table('client_prompts')
-            ->where('client_id',$client->id)
+            ->where('client_id', $client->id)
             ->latest()
             ->limit($client->prompts_limit)
             ->pluck('content')
@@ -37,9 +37,9 @@ class PublicChatController extends Controller
         // собираем сообщения
         $messages = [
             [
-                'role'=>'system',
-                'content'=>
-"ROLE: You are a concise website chatbot for the client.
+                'role' => 'system',
+                'content' =>
+                "ROLE: You are a concise website chatbot for the client.
 RULES:
 - Answer in the user's language.
 - Keep answers extremely short (1–5 short sentences, ~60–80 words max).
@@ -50,29 +50,36 @@ OUTPUT: Plain text, no markdown, no lists unless necessary."
             ],
         ];
         foreach ($prompts as $p) {
-            $messages[] = ['role'=>'system','content'=>$p];
+            $messages[] = ['role' => 'system', 'content' => $p];
         }
         // 3 последних QA из history
         foreach ($request->input('history', []) as $h) {
-            $messages[] = ['role'=>'user', 'content'=>$h['q']];
-            $messages[] = ['role'=>'assistant', 'content'=>$h['a']];
+            $messages[] = ['role' => 'user', 'content' => $h['q']];
+            $messages[] = ['role' => 'assistant', 'content' => $h['a']];
         }
         // текущий вопрос
-        $messages[] = ['role'=>'user','content'=>$request->input('message')];
+        $messages[] = ['role' => 'user', 'content' => $request->input('message')];
 
         try {
-            $resp = OpenAI::chat()->create([
-                'model'   => env('OPENAI_MODEL','gpt-4o-mini'),
-                'messages'=> $messages,
+            // use OpenAI\Laravel\Facades\OpenAI;  <-- удалить
+
+            $client = OpenAI::factory()
+                ->withApiKey(env('OPENAI_API_KEY'))
+                ->make();
+
+            $resp = $client->chat()->create([
+                'model'    => env('OPENAI_MODEL', 'gpt-4o-mini'),
+                'messages' => $messages,
             ]);
+
             $answer = trim($resp->choices[0]->message->content ?? '...');
         } catch (\Throwable $e) {
-            return response()->json(['error'=>'AI_EXCEPTION','details'=>$e->getMessage()], 500);
+            return response()->json(['error' => 'AI_EXCEPTION', 'details' => $e->getMessage()], 500);
         }
 
         // учёт квоты
         $client->increment('dialog_used');
-        $client->update(['last_active_at'=>now()]);
+        $client->update(['last_active_at' => now()]);
 
         return response()->json([
             'answer'      => $answer,

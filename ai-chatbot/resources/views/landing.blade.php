@@ -27,7 +27,7 @@
                 <div class="main__block-wrapper">
                     <!---VERSION--->
                     <div class="main__block-version">
-                        Version 1.0
+                        Version 1.2
                     </div>
 
                     <!---chat BOT logo and desc----->

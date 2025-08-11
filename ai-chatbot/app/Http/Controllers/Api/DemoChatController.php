@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
+use OpenAI\Client;
+use OpenAI\Factory;
 
 class DemoChatController extends Controller
 {
@@ -28,8 +30,8 @@ class DemoChatController extends Controller
 
         $demoPrompts = [
             "SITE: D.A.I. — demo AI assistant for a software studio.",
-            "SERVICES: Chatbot integration, AI assistants for websites, prompt design, usage analytics.",
-            "CONTACTS: hello@daker.example, Mon–Fri 10:00–18:00.",
+            "SERVICES:Chatbot integration, AI assistants for websites, prompt design, usage analytics.",
+            "CONTACTS:contact@daker.az,Mon–Fri 10:00–18:00.number: +994507506901",
             "SCOPE: Only answer about our services and how to integrate the widget. If asked about other topics, say it's out of scope.",
         ];
 
@@ -37,7 +39,7 @@ class DemoChatController extends Controller
             [
                 'role' => 'system',
                 'content' =>
-"ROLE: You are a concise website chatbot for the client.
+                "ROLE: You are a concise website chatbot for the client.
 RULES:
 - Answer in the user's language.
 - Keep answers extremely short (1–5 short sentences, ~60–80 words max).
@@ -62,14 +64,21 @@ OUTPUT: Plain text, no markdown, no lists unless necessary."
         Log::debug('DemoChat: prepared messages for OpenAI', $messages);
 
         try {
-            $resp = OpenAI::chat()->create([
-                'model'   => env('OPENAI_MODEL', 'gpt-4o-mini'),
-                'messages'=> $messages,
+            // создаём клиента без фасада, напрямую из .env
+            $client = (new Factory())
+            ->withApiKey(env('OPENAI_API_KEY'))
+            ->make();
+        
+        
+
+            $resp = $client->chat()->create([
+                'model'    => env('OPENAI_MODEL', 'gpt-4o-mini'),
+                'messages' => $messages,
             ]);
+
 
             $answer = trim($resp->choices[0]->message->content ?? '...');
             Log::info('DemoChat: got response from OpenAI', ['answer' => $answer]);
-
         } catch (\Throwable $e) {
             Log::error('DemoChat: AI_EXCEPTION', [
                 'error' => $e->getMessage(),
