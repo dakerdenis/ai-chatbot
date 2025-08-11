@@ -237,6 +237,14 @@ h6 {
     background-color: var(--c-red);
     opacity: 0.9;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chat__card-logo i {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 400;
 }
 .chat__card-name {
     color: var(#333333);
@@ -399,6 +407,10 @@ h6 {
 }
 
 
+/* Скрыть карточки и показать чат, когда начинается диалог */
+.is-chatting .chat__cards-wrapper { display: none !important; }
+.chat__form-answers { display: none; }              /* по умолчанию скрыто */
+.is-chatting .chat__form-answers { display: block; } /* показываем при чате */
 
 
 

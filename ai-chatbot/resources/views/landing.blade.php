@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/landing.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -47,59 +48,35 @@
 
 
                     <!----chat bot about CARDS disappear when user writes something----->
-                    <div class="chat__cards-wrapper">
-                        <!------->
+                    <div class="chat__cards-wrapper"> <!-- Card 1 -->
                         <div class="chat__card-element">
                             <div class="chat__card-container">
-                                <div class="chat__card-logo">
-
-                                </div>
-                                <div class="chat__card-name">
-                                    Stock market updates
-                                </div>
-                                <div class="chat__card-text">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar arcu
-                                    lacus, a maximus purus imperdiet auctor. Integer nisi neque, placerat id suscipit
-                                    non, convallis eget ipsum.
-                                </div>
+                                <div class="chat__card-logo"> <img src="{{ asset('/assets/images/icon-ai.svg') }}"
+                                        alt="AI Icon"> </div>
+                                <div class="chat__card-name"> Real-time AI Assistance </div>
+                                <div class="chat__card-text"> Get instant, accurate answers powered by advanced AI
+                                    algorithms to help you work smarter and faster. </div>
                             </div>
-                        </div>
-                        <!------->
-                        <!------->
+                        </div> <!-- Card 2 -->
                         <div class="chat__card-element">
                             <div class="chat__card-container">
-                                <div class="chat__card-logo">
-
+                                <div class="chat__card-logo"> <img
+                                        src="{{ asset('/assets/images/icon-integration.svg') }}" alt="Integration Icon">
                                 </div>
-                                <div class="chat__card-name">
-                                    Stock market updates
-                                </div>
-                                <div class="chat__card-text">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar arcu
-                                    lacus, a maximus purus imperdiet auctor. Integer nisi neque, placerat id suscipit
-                                    non, convallis eget ipsum.
-                                </div>
+                                <div class="chat__card-name"> Customizable Integrations </div>
+                                <div class="chat__card-text"> Easily integrate the chatbot into your apps, websites, or
+                                    platforms with minimal setup and full control. </div>
                             </div>
-                        </div>
-                        <!------->
-                        <!------->
+                        </div> <!-- Card 3 -->
                         <div class="chat__card-element">
                             <div class="chat__card-container">
-                                <div class="chat__card-logo">
-
+                                <div class="chat__card-logo"> <i class="fa fa-clock-o" style="font-size:24px"></i>
                                 </div>
-                                <div class="chat__card-name">
-                                    Stock market updates
-                                </div>
-                                <div class="chat__card-text">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pulvinar arcu
-                                    lacus, a maximus purus imperdiet auctor. Integer nisi neque, placerat id suscipit
-                                    non, convallis eget ipsum.
-                                </div>
+                                <div class="chat__card-name"> 24/7 Availability </div>
+                                <div class="chat__card-text"> Our chatbot is always online, ready to assist you at any
+                                    time of the day, every day of the year. </div>
                             </div>
                         </div>
-                        <!------->
-
                     </div>
                     <!----Here will be messages of chatbot---->
                     <!-- ----Here will be messages of chatbot---->
@@ -109,7 +86,7 @@
                             <div class="msg bot">
                                 <div class="avatar">AI</div>
                                 <div class="bubble">
-                                    Привет! Я помогу с вопросами о вашем сервисе. Сформулируйте запрос и нажмите Enter.
+                                    Hi! Ask me anything about our services. Type your question and press Enter.
                                 </div>
                             </div>
                         </div>
@@ -148,88 +125,114 @@
 
 
     <script>
-(function(){
-  const form = document.querySelector('.chat__form-form');
-  const input = form?.querySelector('input[type="text"]');
-  const thread = document.getElementById('chatThread');
-  const typing = document.getElementById('typing');
-  const sendBtn = form?.querySelector('button');
-  const container = document.querySelector('.main__block-wrapper'); // сюда повесим класс is-chatting
+        (function() {
+            const form = document.querySelector('.chat__form-form');
+            const input = form?.querySelector('input[type="text"]');
+            const thread = document.getElementById('chatThread');
+            const typing = document.getElementById('typing');
+            const sendBtn = form?.querySelector('button');
+            const container = document.querySelector('.main__block-wrapper'); // сюда повесим класс is-chatting
 
-  if(!form || !input || !thread) return;
+            if (!form || !input || !thread) return;
 
-  function scrollToBottom(){
-    thread.scrollTop = thread.scrollHeight;
-  }
+            function scrollToBottom() {
+                thread.scrollTop = thread.scrollHeight;
+            }
 
-  function addMsg(role, text){
-    const wrap = document.createElement('div');
-    wrap.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+            function addMsg(role, text) {
+                const wrap = document.createElement('div');
+                wrap.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
 
-    if(role !== 'user'){
-      const av = document.createElement('div');
-      av.className = 'avatar';
-      av.textContent = 'AI';
-      wrap.appendChild(av);
-    }
+                if (role !== 'user') {
+                    const av = document.createElement('div');
+                    av.className = 'avatar';
+                    av.textContent = 'AI';
+                    wrap.appendChild(av);
+                }
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = text;
-    wrap.appendChild(bubble);
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.textContent = text;
+                wrap.appendChild(bubble);
 
-    thread.appendChild(wrap);
-    scrollToBottom();
-  }
+                thread.appendChild(wrap);
+                scrollToBottom();
+            }
 
-  function toggleTyping(show){
-    typing.hidden = !show;
-    if(show) scrollToBottom();
-  }
+            function toggleTyping(show) {
+                typing.hidden = !show;
+                if (show) scrollToBottom();
+            }
 
-  async function handleSend(){
-    const q = (input.value || '').trim();
-    if(!q) return;
+            async function handleSend() {
+                const q = (input.value || '').trim();
+                if (!q) return;
 
-    // Включаем "режим чата": прячем карточки, показываем ленту
-    container?.classList.add('is-chatting');
+                // включаем режим чата (карточки скроются по CSS, см. п.2)
+                container?.classList.add('is-chatting');
 
-    // добавляем сообщение пользователя
-    addMsg('user', q);
-    input.value = '';
+                // добавляем сообщение пользователя
+                addMsg('user', q);
+                input.value = '';
 
-    // показываем индикатор
-    toggleTyping(true);
+                // инициализируем историю
+                window.chatHistory = window.chatHistory || [];
 
-    try{
-      // TODO: здесь можно звать реальный API:
-      // const res = await fetch('/api/public-chat', { ... });
-      // const data = await res.json(); const answer = data.answer;
-      // Для демо имитируем ответ:
-      await new Promise(r => setTimeout(r, 700));
-      const answer = 'Это заглушка ответа. Здесь будет ответ нейросети на ваш вопрос.';
+                // показываем индикатор
+                toggleTyping(true);
 
-      addMsg('bot', answer);
-    }catch{
-      addMsg('bot', 'Ошибка сети. Повторите попытку позже.');
-    }finally{
-      toggleTyping(false);
-    }
-  }
+                try {
+                    const body = {
+                        message: q,
+                        history: window.chatHistory.slice(-3)
+                    };
+                    const res = await fetch('/api/demo-chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
+                    const data = await res.json();
 
-  // обработчики
-  form.addEventListener('submit', (e)=>{ e.preventDefault(); handleSend(); });
-  sendBtn?.addEventListener('click', (e)=>{ e.preventDefault(); handleSend(); });
+                    const answer = res.ok ? (data.answer || '...') : (data.error || 'Error');
+                    addMsg('bot', answer);
 
-  // Enter в поле
-  input.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){
-      e.preventDefault();
-      handleSend();
-    }
-  });
-})();
-</script>
+                    // сохраняем последние 3 Q/A
+                    window.chatHistory.push({
+                        q,
+                        a: answer
+                    });
+                    if (window.chatHistory.length > 3) {
+                        window.chatHistory = window.chatHistory.slice(-3);
+                    }
+                } catch (e) {
+                    addMsg('bot', 'Network error. Please try again.');
+                } finally {
+                    toggleTyping(false);
+                }
+            }
+
+
+            // обработчики
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleSend();
+            });
+            sendBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleSend();
+            });
+
+            // Enter в поле
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSend();
+                }
+            });
+        })();
+    </script>
 
 </body>
 
