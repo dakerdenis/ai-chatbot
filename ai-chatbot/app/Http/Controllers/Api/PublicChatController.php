@@ -77,9 +77,9 @@ OUTPUT: Plain text, no markdown, no lists unless necessary."
             ]);
 
         } catch (\Throwable $e) {
-            Log::error('widget.ai_error', ['client_id'=>$client->id, 'err'=>$e->getMessage()]);
-            return response()->json(['error'=>'AI_EXCEPTION'], 500);
-        }
+    Log::error('ai.error', ['type'=>get_class($e), 'msg'=>$e->getMessage()]);
+    return response()->json(['error' => 'AI_EXCEPTION'], 500);
+}
 
         $client->increment('dialog_used');
         $client->update(['last_active_at'=>now()]);

@@ -107,11 +107,8 @@ class DemoChatController extends Controller
 
             return response()->json(['answer' => $answer]);
         } catch (\Throwable $e) {
-            // Без PII
-            Log::error('demo.ai_error', ['type' => get_class($e)]);
-            return response()->json([
-                'error' => 'AI_EXCEPTION',
-            ], 500)->header('Cache-Control', 'no-store');
-        }
+    Log::error('ai.error', ['type'=>get_class($e), 'msg'=>$e->getMessage()]);
+    return response()->json(['error' => 'AI_EXCEPTION'], 500);
+}
     }
 }

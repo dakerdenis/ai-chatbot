@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PublicChatController;
 use App\Http\Controllers\Api\DemoChatController;
+use App\Http\Controllers\Api\OpenAiDiagController;
 
 // Виджет: требует X-API-TOKEN, лимит 10/мин
 Route::middleware(['throttle:client-chat','auth.client'])
@@ -14,3 +15,4 @@ Route::middleware(['throttle:demo-chat'])
 
 
 Route::get('/ping', fn() => response()->json(['ok'=>true]));
+Route::get('/health/openai', [OpenAiDiagController::class, 'ping']);

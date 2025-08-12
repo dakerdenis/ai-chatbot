@@ -1,0 +1,9 @@
+# /dai.daker.az/.htaccess
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Всё, что не /public, перекидываем в /public
+  RewriteCond %{REQUEST_URI} !^/public/
+  RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
