@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ./ai-chatbot
+      dockerfile: Dockerfile
+    image: ai-chatbot/php83
+    container_name: ai-app
+    restart: unless-stopped
+    env_file:
+      - ./ai-chatbot/.env
+    working_dir: /var/www/html
+    volumes:
+      - ./ai-chatbot:/var/www/html
+    depends_on:
+      - db
+      - cache
+
+  web:
+    image: nginx:alpine
+    container_name: ai-web
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./ai-chatbot:/var/www/html
+      - ./ai-chatbot/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: ai-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ai-chatbot
+      MYSQL_USER: ai
+      MYSQL_PASSWORD: ai_pass
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  cache:
+    image: redis:7-alpine
+    container_name: ai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+volumes:
+  dbdata:
