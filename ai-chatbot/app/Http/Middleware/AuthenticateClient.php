@@ -4,35 +4,47 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Client;
-use Illuminate\Support\Facades\DB;
 
 class AuthenticateClient
 {
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->header('X-API-TOKEN');
-        if (!$token) return response()->json(['error'=>'API token missing'], 401);
+        $token = (string) $request->header('X-API-TOKEN');
+        $host  = $request->getHost(); // например 127.0.0.1
+        $host  = preg_replace('/:\d+$/', '', $host); // на всякий
 
-        $client = Client::where('api_token', $token)->first();
-        if (!$client || !$client->is_active) return response()->json(['error'=>'Unauthorized client'], 403);
-
-        // Проверка домена (на старте можно закомментировать, если мешает)
-        $origin = $request->headers->get('origin') ?? $request->headers->get('referer');
-        if ($origin) {
-            $host = parse_url($origin, PHP_URL_HOST);
-            if (!$host || !$client->domains()->where('domain', $host)->exists()) {
-                return response()->json(['error'=>'Unauthorized domain'], 403);
-            }
+        if (!$token) {
+            Log::warning('auth.client: missing token', ['host'=>$host, 'ua'=>$request->userAgent()]);
+            return response()->json(['error'=>'Unauthorized client'], 401);
         }
 
-        $request->merge(['client'=>$client]);
+        /** @var Client|null $client */
+        $client = Client::where('api_token', $token)->first();
 
-        DB::table('client_usage_logs')->insert([
-            'client_id'=>$client->id,'endpoint'=>$request->path(),'method'=>$request->method(),
-            'payload'=>json_encode($request->except(['password','api_token']), JSON_PARTIAL_OUTPUT_ON_ERROR),
-            'ip_address'=>$request->ip(),'created_at'=>now(),
-        ]);
+        if (!$client) {
+            Log::warning('auth.client: invalid token', ['host'=>$host, 'token_tail'=>substr($token, -6)]);
+            return response()->json(['error'=>'Unauthorized client'], 401);
+        }
+
+        if (!$client->is_active) {
+            Log::warning('auth.client: inactive client', ['client_id'=>$client->id]);
+            return response()->json(['error'=>'Client inactive'], 403);
+        }
+
+        // проверка домена (client_domains.domain == $host)
+        $allowed = $client->domains()->where('domain', $host)->exists();
+        if (!$allowed) {
+            Log::warning('auth.client: domain not allowed', [
+                'client_id'=>$client->id, 'host'=>$host
+            ]);
+            return response()->json(['error'=>'Domain not allowed'], 403);
+        }
+
+        // всё ок — прокидываем клиента дальше
+        $request->attributes->set('client', $client);
+        Log::info('auth.client: ok', ['client_id'=>$client->id, 'host'=>$host]);
 
         return $next($request);
     }

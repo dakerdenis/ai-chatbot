@@ -6,11 +6,12 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientPromptController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminClientController;
-
+use App\Http\Controllers\WidgetController;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/widget.js', [LandingController::class, 'widget'])->name('widget.js');
-
+Route::get('/chat-widget/{token}', [WidgetController::class, 'show'])
+    ->name('chat.widget.show');
 
 // клиент
 Route::middleware('guest')->group(function () {
