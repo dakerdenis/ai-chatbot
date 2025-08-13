@@ -3,23 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Client; // проверь, что модель именно тут
+use App\Models\Client;
 
 class WidgetController extends Controller
 {
-    /**
-     * Рендер iframe-страницы виджета по api_token.
-     */
-public function show(Request $request, string $token)
-{
-    $token  = trim(urldecode($token));
-    $client = \App\Models\Client::where('api_token', $token)->first();
+    public function show(Request $request, string $token)
+    {
+        $token  = trim(urldecode($token));
+        $site   = (string) $request->query('site', '');
 
-    if (!$client) {
-        return response()->view('widget-invalid', [], 404);
+        $client = Client::where('api_token', $token)->first();
+
+        if (!$client) {
+            // вместо дефолтного «тёмного» 404 отдаём свою страницу
+            return response()->view('widget-invalid', [], 404);
+        }
+
+        return view('widget', [
+            'client' => $client,
+            'site'   => $site, // <- пробрасываем
+        ]);
     }
-
-    return view('widget', ['client' => $client]);
-}
-
 }

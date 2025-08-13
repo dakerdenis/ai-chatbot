@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Factory; // <-- добавили
+use Illuminate\Support\Facades\Config;
+
 
 class PublicChatController extends Controller
 {
@@ -56,14 +58,22 @@ OUTPUT: Plain text, no markdown, no lists unless necessary."
         $messages[] = ['role'=>'user','content'=>$request->input('message')];
 
         try {
-            $oa = (new Factory())
-                ->withApiKey((string) env('OPENAI_API_KEY'))
-                ->make();
+$apiKey = (string) config('openai.api_key');
+if ($apiKey === '') {
+    Log::error('ai.error', ['type'=>'env','msg'=>'OPENAI_API_KEY missing via config']);
+    return response()->json(['error' => 'AI_EXCEPTION'], 500);
+}
 
-            $resp = $oa->chat()->create([
-                'model'    => env('OPENAI_MODEL', 'gpt-4o-mini'),
-                'messages' => $messages,
-            ]);
+$oa = (new Factory())
+    ->withApiKey($apiKey)
+    ->make();
+
+
+$resp = $oa->chat()->create([
+    'model'    => (string) config('openai.model', 'gpt-4o-mini'),
+    'messages' => $messages,
+]);
+
 
             $answer = trim($resp->choices[0]->message->content ?? '...');
 

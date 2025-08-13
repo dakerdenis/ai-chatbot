@@ -73,6 +73,8 @@
     <audio id="chat-sound" src="{{ asset('assets/sounds/button-3.mp3') }}" preload="auto"></audio>
 
     <script>
+
+        const SITE    = @json($site); 
         // данные клиента
         const token = @json($client->api_token);
         const chat = document.getElementById('chat');
@@ -150,16 +152,17 @@
                     message: text,
                     history: history.slice(-3) // {q,a}
                 };
-                const res = await fetch('/api/public-chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-API-TOKEN': token
-                    },
-                    body: JSON.stringify(payload),
-                    credentials: 'omit'
-                });
+const res = await fetch('/api/public-chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-API-TOKEN': token,
+    'X-CLIENT-SITE': SITE || location.hostname   // <-- ВАЖНО
+  },
+  body: JSON.stringify(payload),
+  credentials: 'omit'
+});
                 const data = await res.json().catch(() => ({}));
                 typing.remove();
 

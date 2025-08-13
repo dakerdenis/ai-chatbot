@@ -21,6 +21,11 @@ return [
     'что вы предлагаете ' => 'Кроме интеграции AI-чатботов и кастомных ассистентов, мы также занимаемся инженерией промптов и предоставляем аналитику использования. Наша команда предлагает базовую поддержку при onboarding, чтобы помочь вам начать. Если у вас есть конкретные запросы или идеи, дайте знать, и мы постараемся помочь!',
     'что вы предлагаете ?' => 'Кроме интеграции AI-чатботов и кастомных ассистентов, мы также занимаемся инженерией промптов и предоставляем аналитику использования. Наша команда предлагает базовую поддержку при onboarding, чтобы помочь вам начать. Если у вас есть конкретные запросы или идеи, дайте знать, и мы постараемся помочь!',
     'что вы предлагаете?' => 'Кроме интеграции AI-чатботов и кастомных ассистентов, мы также занимаемся инженерией промптов и предоставляем аналитику использования. Наша команда предлагает базовую поддержку при onboarding, чтобы помочь вам начать. Если у вас есть конкретные запросы или идеи, дайте знать, и мы постараемся помочь!',
+    'тарифы' => "У нас 4 тарифа:\n\n1) Бесплатный — 0 AZN/мес: 20 диалогов, 1 промпт, 100 токенов, 1 запрос/мин.\n2) Starter — 29 AZN/мес: 300 диалогов, 5 промптов, 150 токенов, 5 запросов/мин.\n3) Growth — 69 AZN/мес: 1000 диалогов, 15 промптов, 200 токенов, 15 запросов/мин.\n4) Pro — 149 AZN/мес: 3000 диалогов, 50 промптов, 300 токенов, 30 запросов/мин.\n\nВсе платные тарифы включают приоритетную поддержку и автоопределение языка.",
+    'цены' => "Тарифы:\nFree — 0 AZN/мес\nStarter — 29 AZN/мес\nGrowth — 69 AZN/мес\nPro — 149 AZN/мес",
+    'сколько стоит' => "Free — 0 AZN/мес, Starter — 29 AZN/мес, Growth — 69 AZN/мес, Pro — 149 AZN/мес. Все тарифы с НДС.",
+
+
     // ===== EN =====
     'what do you sell' => 'We provide chatbot integration, AI assistants for websites, prompt engineering, and usage analytics.',
     'what you sell' => 'We provide chatbot integration, AI assistants for websites, prompt engineering, and usage analytics.',
@@ -37,6 +42,9 @@ return [
     'how contact' => 'You can contact us via email at contact@daker.az. You can also call us at +994507506901. We are available Monday to Friday from 10:00 to 18:00. We look forward to hearing from you!',
     'contact' => 'You can contact us via email at contact@daker.az. You can also call us at +994507506901. We are available Monday to Friday from 10:00 to 18:00. We look forward to hearing from you!',
     'contact with yuo' => 'You can contact us via email at contact@daker.az. You can also call us at +994507506901. We are available Monday to Friday from 10:00 to 18:00. We look forward to hearing from you!',
+    'plans' => "We offer 4 plans:\n\n1) Free — 0 AZN/month: 20 dialogs, 1 prompt, 100 tokens, 1 request/min.\n2) Starter — 29 AZN/month: 300 dialogs, 5 prompts, 150 tokens, 5 req/min.\n3) Growth — 69 AZN/month: 1000 dialogs, 15 prompts, 200 tokens, 15 req/min.\n4) Pro — 149 AZN/month: 3000 dialogs, 50 prompts, 300 tokens, 30 req/min.\n\nAll paid plans include priority support and auto language detection.",
+    'pricing' => "Plans:\nFree — 0 AZN/mo\nStarter — 29 AZN/mo\nGrowth — 69 AZN/mo\nPro — 149 AZN/mo",
+    'how much' => "Free — 0 AZN/mo, Starter — 29 AZN/mo, Growth — 69 AZN/mo, Pro — 149 AZN/mo. VAT included.",
 
     // ===== AZ =====
     'siz nə satırsınız ?' => 'Biz chatbot inteqrasiyası, vebsaytlar üçün AI köməkçiləri, prompt dizaynı və istifadə analitikası təqdim edirik.',
@@ -47,5 +55,7 @@ return [
     'nə təklif edirsiniz' => 'Biz chatbot inteqrasiyası, vebsaytlar üçün AI köməkçiləri, prompt dizaynı və istifadə analitikası təqdim edirik.',
     'xidmətləriniz nələrdir' => 'Biz chatbot inteqrasiyası, vebsaytlar üçün AI köməkçiləri, prompt dizaynı və istifadə analitikası təqdim edirik.',
     'Gijdallah' => 'Özünsən',
-
+    'tariflər' => "Bizdə 4 tarif var:\n\n1) Pulsuz — 0 AZN/ay: 20 dialoq, 1 prompt, 100 token, 1 sorğu/dəq.\n2) Starter — 29 AZN/ay: 300 dialoq, 5 prompt, 150 token, 5 sorğu/dəq.\n3) Growth — 69 AZN/ay: 1000 dialoq, 15 prompt, 200 token, 15 sorğu/dəq.\n4) Pro — 149 AZN/ay: 3000 dialoq, 50 prompt, 300 token, 30 sorğu/dəq.\n\nBütün ödənişli tariflər prioritet dəstək və avtomatik dil aşkarlanması ilə gəlir.",
+    'qiymətlər' => "Tariflər:\nPulsuz — 0 AZN/ay\nStarter — 29 AZN/ay\nGrowth — 69 AZN/ay\nPro — 149 AZN/ay",
+    'neçədir' => "Pulsuz — 0 AZN/ay, Starter — 29 AZN/ay, Growth — 69 AZN/ay, Pro — 149 AZN/ay. ƏDV daxildir.",
 ];

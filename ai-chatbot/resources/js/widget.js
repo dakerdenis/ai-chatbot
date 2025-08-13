@@ -19,9 +19,12 @@
   document.body.appendChild(button);
 
   // iframe (абсолютный URL)
-  var origin = (script.getAttribute('data-origin') || window.location.origin).replace(/\/+$/,'');
-  var iframe = document.createElement('iframe');
-  iframe.src = origin + '/chat-widget/' + encodeURIComponent(token);
+var origin = (script.getAttribute('data-origin') || 'https://www.dai.daker.az').replace(/\/+$/,'');
+var site   = window.location.hostname;
+var iframe = document.createElement('iframe');
+iframe.src = origin + '/chat-widget/' + encodeURIComponent(token) + '?site=' + encodeURIComponent(site);
+
+  
   Object.assign(iframe.style, {
     position:'fixed', bottom:'90px', right:'20px',
     width:'370px', height:'520px', border:'none',
