@@ -11,10 +11,10 @@ class OpenAiDiagController extends Controller
 {
     public function ping(Request $request)
     {
-        $key = (string) env('OPENAI_API_KEY');
-        if (!$key) {
-            return response()->json(['ok'=>false,'where'=>'env','err'=>'OPENAI_API_KEY missing'], 500);
-        }
+$key = (string) config('openai.api_key');   // <-- вместо env('OPENAI_API_KEY')
+if ($key === '') {
+    return response()->json(['ok'=>false,'where'=>'config','err'=>'openai.api_key missing'], 500);
+}
 
         try {
             $client = new Client([

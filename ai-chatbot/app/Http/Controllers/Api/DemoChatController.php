@@ -79,21 +79,22 @@ class DemoChatController extends Controller
 
         try {
             // HTTP‑клиент с таймаутами
-            $client = (new Factory())
-                ->withApiKey((string) env('OPENAI_API_KEY'))
+            $client = (new \OpenAI\Factory())
+                ->withApiKey((string) config('openai.api_key')) // <-- было env()
                 ->withHttpClient(new \GuzzleHttp\Client([
-                    'timeout' => 12.0, // общий таймаут
+                    'timeout' => 12.0,
                     'connect_timeout' => 4.0,
                 ]))
                 ->make();
 
             $resp = $client->chat()->create([
-                'model' => (string) ($gen['model'] ?? env('OPENAI_MODEL', 'gpt-3.5-turbo')),
+                'model' => (string) ($gen['model'] ?? config('openai.model')),
                 'messages' => $messages,
                 'max_tokens' => (int) ($gen['max_tokens'] ?? 150),
                 'temperature' => (float) ($gen['temperature'] ?? 0.4),
                 'user' => 'demo:' . $request->ip(),
             ]);
+
 
             $answer = trim($resp->choices[0]->message->content ?? '...');
             $usage = $resp->usage ?? null;
@@ -107,8 +108,8 @@ class DemoChatController extends Controller
 
             return response()->json(['answer' => $answer]);
         } catch (\Throwable $e) {
-    Log::error('ai.error', ['type'=>get_class($e), 'msg'=>$e->getMessage()]);
-    return response()->json(['error' => 'AI_EXCEPTION'], 500);
-}
+            Log::error('ai.error', ['type' => get_class($e), 'msg' => $e->getMessage()]);
+            return response()->json(['error' => 'AI_EXCEPTION'], 500);
+        }
     }
 }
