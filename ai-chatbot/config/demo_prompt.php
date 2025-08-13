@@ -19,7 +19,6 @@ return [
         'how' => "HOW IT WORKS: Add a small script to your site; the widget talks to our API. You provide your own prompts/content to shape tone and answers. We keep responses short and relevant.",
         'customization' => "CUSTOMIZATION: Clients can edit prompts at any time, set per-domain prompts, control answer style, and limit history length for cheaper usage.",
         'languages' => "LANGUAGES: The bot detects user language (RU/AZ/EN) and responds accordingly; answers stay concise.",
-        'setup' => "SETUP: Paste the <script> snippet and token; ensure your domain is allow-listed. Works with any CMS and SPAs via iframe/script.",
         'support' => "SUPPORT: Mon–Fri 10:00–18:00. We help with prompt design and basic analytics interpretation.",
         'contacts' => "CONTACTS: contact@daker.az, Mon–Fri 10:00–18:00, +994507506901.",
         'limits' => "LIMITS: No large knowledge-base ingestion in demo; short answers by design to control cost.",
