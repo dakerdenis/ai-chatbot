@@ -44,38 +44,79 @@ class DemoChatController extends Controller
 
         $userMessage = mb_strtolower($sanitize($request->input('message'), 600));
 
-        // 1) FAQ‑шорткат (дешево, без обращения к LLM)
+
+        // 1. FAQ (точное совпадение, как и было)
         $staticFaq = config('demo_faq', []);
         if (isset($staticFaq[$userMessage])) {
-            // Только факт использования FAQ, без текста
-            Log::info('demo.faq_hit');
+            Log::info('demo.faq_hit', ['q' => $userMessage]);
             return response()->json(['answer' => $staticFaq[$userMessage]]);
         }
 
-        // 2) Формируем безопасный контекст
-        $history = [];
-        foreach ((array) $request->input('history', []) as $h) {
-            $q = $sanitize((string) ($h['q'] ?? ''), 280);
-            $a = $sanitize((string) ($h['a'] ?? ''), 280);
-            if ($q !== '' && $a !== '') {
-                $history[] = ['role' => 'user', 'content' => $q];
-                $history[] = ['role' => 'assistant', 'content' => $a];
+        // 2. Шорткат «тарифы/цены» по подстроке (язык авто)
+        $prices = config('demo_prices');
+        $patterns = $prices['patterns'] ?? [];
+        $answers = $prices['answers'] ?? [];
+
+        $guessLang = function (string $s): string {
+            if (preg_match('/[əğıöşçüİ]/iu', $s))
+                return 'az';
+            if (preg_match('/[а-яё]/iu', $s))
+                return 'ru';
+            return 'en';
+        };
+        $lang = $guessLang($userMessage);
+
+        // проверяем ключевые слова ВСЕХ языков, чтобы поймать кросс‑запросы
+        $hit = false;
+        foreach ($patterns as $lng => $list) {
+            foreach ($list as $needle) {
+                if ($needle !== '' && mb_stripos($userMessage, $needle) !== false) {
+                    $lang = $lng; // зафиксируем язык по найденному паттерну
+                    $hit = true;
+                    break 2;
+                }
             }
         }
+        if ($hit && !empty($answers[$lang] ?? null)) {
+            Log::info('demo.shortcut_prices', ['lang' => $lang, 'q' => $userMessage]);
+            return response()->json(['answer' => $answers[$lang]]);
+        }
+
+
+
+
+        // 2) Формируем безопасный контекст
+        $history = [];
+
+
         $cfg = config('demo_prompt');
         $system = (string) ($cfg['system'] ?? '');
         $facts = (array) ($cfg['facts'] ?? []);
         $gen = (array) ($cfg['gen'] ?? []);
 
-        $messages = array_merge(
-            [
-                ['role' => 'system', 'content' => $system],
-                ['role' => 'system', 'content' => (string) ($facts['services'] ?? '')],
-                ['role' => 'system', 'content' => (string) ($facts['contacts'] ?? '')],
-            ],
-            $history,
-            [['role' => 'user', 'content' => $sanitize($request->input('message'), 600)]]
-        );
+        // 1) system + ВСЕ факты отдельными system-сообщениями
+        $messages = [
+            ['role' => 'system', 'content' => $system],
+        ];
+        foreach ($facts as $fact) {
+            $fact = (string) $fact;
+            if ($fact !== '') {
+                $messages[] = ['role' => 'system', 'content' => $fact];
+            }
+        }
+
+        // 2) история (до 3 Q/A)
+        foreach ((array) $request->input('history', []) as $h) {
+            $q = $sanitize((string) ($h['q'] ?? ''), 280);
+            $a = $sanitize((string) ($h['a'] ?? ''), 280);
+            if ($q !== '' && $a !== '') {
+                $messages[] = ['role' => 'user', 'content' => $q];
+                $messages[] = ['role' => 'assistant', 'content' => $a];
+            }
+        }
+
+        // 3) текущий вопрос
+        $messages[] = ['role' => 'user', 'content' => $sanitize($request->input('message'), 600)];
 
         try {
             // HTTP‑клиент с таймаутами
@@ -90,10 +131,11 @@ class DemoChatController extends Controller
             $resp = $client->chat()->create([
                 'model' => (string) ($gen['model'] ?? config('openai.model')),
                 'messages' => $messages,
-                'max_tokens' => (int) ($gen['max_tokens'] ?? 150),
+                'max_tokens' => (int) ($gen['max_tokens'] ?? 220), // ← больше места для сравнения тарифов
                 'temperature' => (float) ($gen['temperature'] ?? 0.4),
                 'user' => 'demo:' . $request->ip(),
             ]);
+
 
 
             $answer = trim($resp->choices[0]->message->content ?? '...');
