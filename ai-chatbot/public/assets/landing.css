@@ -438,4 +438,64 @@ h6 {
         min-height: 600px;
         left: initial;
     }
+
+    .main__block-wrapper{
+        padding: 15px 15px;
+    }
+    .main__block-version{
+        font-size: 9px;
+    }
+    .main__block-desc{
+        margin-top: 5px;
+    }
+    .chat_logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 20px;
+}
+.chat_logo img{
+    width: 100%;
+    height: 100%;
+
+}
+.chat__desc h1 {
+    font-size: 22px;
+}
+.chat_desc-text{
+    font-size: 22px;
+}
+.chat__cards-wrapper{
+    margin-top: 10px;
+    height: initial;
+    width: 100%;
+    flex-direction: column;
+}
+.chat__card-element{
+    margin-top: 10px;
+    width: 280px;
+    height: 140px;
+}
+.chat__card-container{
+    padding: 13px;
+}
+.chat__form-container{
+    width: 92%;
+    left: initial;
+}
+.chat__form-form input {    
+    width: 232px;
+}
+
+.chat__form-answers{
+        width: 94%;
+    /* left: calc(50% - 436.5px); */
+    position: absolute;
+    bottom: 150px;
+    z-index: 500;
+    left: initial;
+    height: calc(100% - 300px);
+}
+.chat__thread{
+    height: 100%;
+}
 }
